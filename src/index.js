@@ -1,4 +1,4 @@
-const Path = require('path')
+const Path = require('path-browserify')
 
 function objectNotFound(objectName) {
 	return makeResponse(
