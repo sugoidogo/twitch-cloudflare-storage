@@ -1,0 +1,17 @@
+{
+  "name": "twitch-cloudflare-storage",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev"
+  },
+  "devDependencies": {
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "path-browserify": "^1.0.1"
+  }
+}
