@@ -25,7 +25,6 @@ function makeResponse(body=undefined,init=undefined){
 
 export default {
 	async fetch(request, env) {
-		try{
 			if(request.method==='OPTIONS'){
 				return makeResponse()
 			}
@@ -133,9 +132,5 @@ export default {
 			return makeResponse(`Unsupported method`, {
 				status: 400
 			})
-		}catch (e){
-			console.error(e)
-			return makeResponse(undefined,{status:500})
-		}
 	}
 }
