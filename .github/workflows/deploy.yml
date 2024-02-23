@@ -15,9 +15,8 @@ jobs:
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      - uses: ncipollo/release-action@v1
+      - uses: softprops/action-gh-release@v1
         with:
-          allowUpdates: true
-          generateReleaseNotes: true
-          makeLatest: true
-          tag: "${{ inputs.tag }}"
+          generate_release_notes: true
+          append_body: true
+          tag_name: "${{ inputs.tag }}"
