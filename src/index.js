@@ -66,9 +66,7 @@ export default {
 			if (request.method === "GET") {
 
 				if (pathname.endsWith('/')) {
-					console.log('getting object listing')
 					const listing = await env.storage.list({ prefix: objectName })
-					console.log()
 					const response = []
 					for (const object of listing.objects) {
 						let key = object.key.slice(objectName.length).split('/')[0]
