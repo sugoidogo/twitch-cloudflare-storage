@@ -140,6 +140,10 @@ export default {
 			}
 
 			if (request.method === "DELETE") {
+				if (objectName.indexOf(writeRoot) !== 0) {
+					return makeResponse(undefined, { status: 400 })
+				}
+				
 				await env.storage.delete(url.pathname.slice(1))
 				return makeResponse()
 			}
