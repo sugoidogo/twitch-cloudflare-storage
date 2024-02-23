@@ -9,8 +9,5 @@
   },
   "devDependencies": {
     "wrangler": "^3.0.0"
-  },
-  "dependencies": {
-    "path-browserify": "^1.0.1"
   }
 }
