@@ -12,6 +12,22 @@ function objectNotFound(objectName) {
 	)
 }
 
+function getRoot(client_id,user_id=undefined,isPublic=false,writeable=false){
+	if(!isPublic){
+		return Path.join(user_id, client_id)
+	}if(!writeable){
+		return Path.join('public', client_id)
+	}return Path.join('public', client_id, user_id)
+}
+
+async function getPathSize(prefix){
+	let size=0
+	for(object of await env.storage.list({prefix:prefix})){
+		size+=object.size
+	}
+	return size
+}
+
 function makeResponse(body = undefined, init = undefined) {
 	if (init == undefined) {
 		init = {}
@@ -53,13 +69,8 @@ export default {
 
 			const url = new URL(request.url)
 			const searchParams = new URLSearchParams(url.searchParams)
-			let requestRoot = Path.join(response.user_id, response.client_id)
-			let writeRoot = requestRoot
-
-			if (searchParams.get('public') === 'true') {
-				requestRoot = Path.join('public', response.client_id)
-				writeRoot = Path.join(requestRoot, response.user_id)
-			}
+			const isPublic=request.headers.get('public')==='true'
+			const requestRoot=getRoot(response.client_id,response.user_id,isPublic,false)
 
 			const pathname = url.pathname
 			const objectName = Path.join(requestRoot, pathname)
@@ -131,8 +142,26 @@ export default {
 			}
 
 			if (request.method === "PUT" || request.method == "POST") {
+				const writeRoot=getRoot(response.client_id,response.user_id,isPublic,true)
 				if (objectName.indexOf(writeRoot) !== 0) {
 					return makeResponse(undefined, { status: 400 })
+				}
+
+				const defaultQuota=Number(env.config.get('QUOTA.DEFAULT')) || 0
+				const clientQuota=Number(env.config.get('QUOTA.'+response.client_id)) || 0
+				const userQuota=Number(env.config.get('QUOTA.'+response.user_id)) || 0
+				const totalQuota=defaultQuota+clientQuota+userQuota
+
+				if(totalQuota>0){
+					const objectSize=Number(request.headers.get('content-length'))
+					const altWriteRoot=getRoot(response.client_id,response.user_id,!isPublic,true)
+					const userDataSize=await getPathSize(writeRoot)+await getPathSize(altWriteRoot)
+					const oldObjectSize=(await env.storage.head(objectName)).size || 0
+					const requestQuotaSize=userDataSize+objectSize-oldObjectSize
+	
+					if(requestQuotaSize>totalQuota){
+						return response(undefined,{status:413})
+					}
 				}
 
 				const object = await env.storage.put(objectName, request.body, {
