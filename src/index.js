@@ -45,6 +45,12 @@ export default {
 			}
 			response = await response.json()
 
+			const DENY=await env.config.get('DENY') || ''
+			const ALLOW=await env.config.get('ALLOW') || ''
+			if(DENY.includes(response.user_id) || !ALLOW.includes(response.client_id)){
+				return makeResponse(undefined,{'status':403})
+			}
+
 			const url = new URL(request.url)
 			const searchParams = new URLSearchParams(url.searchParams)
 			let requestRoot = Path.join(response.user_id, response.client_id)
@@ -143,7 +149,7 @@ export default {
 				if (objectName.indexOf(writeRoot) !== 0) {
 					return makeResponse(undefined, { status: 400 })
 				}
-				
+
 				await env.storage.delete(url.pathname.slice(1))
 				return makeResponse()
 			}
