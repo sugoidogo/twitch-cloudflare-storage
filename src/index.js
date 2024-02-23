@@ -44,8 +44,18 @@ export default {
 				return response
 			}
 			response = await response.json()
-			const requestRoot = Path.join(response.user_id, response.client_id)
-			const pathname = new URL(request.url).pathname
+
+			const url = new URL(request.url)
+			const searchParams = new URLSearchParams(url.searchParams)
+			let requestRoot = Path.join(response.user_id, response.client_id)
+			let writeRoot = requestRoot
+
+			if (searchParams.get('public') === 'true') {
+				requestRoot = Path.join('public', response.client_id)
+				writeRoot = Path.join(requestRoot, response.user_id)
+			}
+
+			const pathname = url.pathname
 			const objectName = Path.join(requestRoot, pathname)
 			if (objectName.indexOf(requestRoot) !== 0) {
 				return makeResponse(undefined, { status: 400 })
@@ -117,6 +127,10 @@ export default {
 			}
 
 			if (request.method === "PUT" || request.method == "POST") {
+				if (objectName.indexOf(writeRoot) !== 0) {
+					return makeResponse(undefined, { status: 400 })
+				}
+
 				const object = await env.storage.put(objectName, request.body, {
 					httpMetadata: request.headers
 				})
