@@ -1,0 +1,22 @@
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: true
+        type: string
+  release:
+    types: [released]
+
+jobs:
+  deploy:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          generateReleaseNotes: true
+          makeLatest: true
+          tag: "${{ inputs.tag }}"
