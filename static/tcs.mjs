@@ -19,6 +19,7 @@ function toDataURL(blob){
 export default class {
     constructor(authProvider){
         this.authProvider=authProvider
+        //TODO: seperate private, public, and queue storage
         this.localStorage=localforage.createInstance({name:authProvider.clientId+'.'+import.meta.url})
     }
 

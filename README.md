@@ -16,3 +16,18 @@ You can use any seperator you wish, including new lines. If the id string is inc
 Quotas are defined in bytes and apply to each user individually. They are disabled by default.
 It is reccommended to add the `QUOTA.DEFAULT` key to prevent storage abuse. This key sets the default per-user storage quota.
 You can also add `QUOTA.<client-id>` to allow additional storage quota for a specific client, for example when one client's use case requires additional storage to be useful, or `QUOTA.<user-id>` for a specific user, for example when selling additional storage space.
+
+## Offline Caching
+
+The static file `/tcs.mjs` is `GET`able without authentication, and can be used with [twurple-auth](https://www.jsdelivr.com/package/npm/@twurple/auth?path=es) for a simple offline cache backed by browser storage. The constructor takes a twurple `authProvider` instance, and comes with the get, put, and delete methods, which each take a path as their first argument, a boolean for public storage as their last, and put accepts a blob or string for the second argument. `get` will only return an error if the request fails *and* there is no cached data to respond with. `put` and `delete` will fail if the request fails, but the cache will still be modified. Use the `sync` function to re-attempt all failed put/delete operations.
+
+```js
+get(path,public=false)
+put(path,data,public=false)
+delete(path,public=false)
+sync()
+```
+
+## Public Storage
+
+If `public=true`, access is redirected to a client-speicific folder for which the user can write into a folder named after their `user-id` and can read from folders named after others' `user-id`s. An example use case would be allowing a viewer to customize their avatar on a stream by writing the avatar settings into the public folder, to be read later by the avatar overlay.
