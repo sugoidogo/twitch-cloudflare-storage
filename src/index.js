@@ -39,11 +39,45 @@ function makeResponse(body = undefined, init = undefined) {
 	return new Response(body, init)
 }
 
+async function getStatic(env,objectName){
+	if(objectName[0]==='/'){
+		objectName=objectName.slice(1)
+	}
+
+	const object = await env.storage.get(objectName)
+
+	if (object === null) {
+		return objectNotFound(objectName)
+	}
+
+	const headers = new Headers()
+	object.writeHttpMetadata(headers)
+	headers.set("etag", object.httpEtag)
+	if (object.range) {
+		headers.set(
+			"content-range",
+			`bytes ${object.range.offset}-${object.range.end ??
+			object.size - 1}/${object.size}`
+		)
+	}
+	const status = 200
+	return makeResponse(object.body, {
+		headers,
+		status
+	})
+}
+
 export default {
 	async fetch(request, env) {
 		try {
 			if (request.method === 'OPTIONS') {
 				return makeResponse()
+			}
+
+			const url = new URL(request.url)
+			const pathname = url.pathname
+			if(pathname=='/tcs.mjs'){
+				return getStatic(env,pathname)
 			}
 
 			if (!request.headers.has('authorization')) {
@@ -67,12 +101,10 @@ export default {
 				return makeResponse(undefined,{'status':403})
 			}
 
-			const url = new URL(request.url)
 			const searchParams = new URLSearchParams(url.searchParams)
 			const isPublic=request.headers.get('public')==='true'
 			const requestRoot=getRoot(response.client_id,response.user_id,isPublic,false)
 
-			const pathname = url.pathname
 			const objectName = Path.join(requestRoot, pathname)
 			if (objectName.indexOf(requestRoot) !== 0) {
 				return makeResponse(undefined, { status: 400 })
