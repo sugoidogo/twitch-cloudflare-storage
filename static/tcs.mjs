@@ -24,7 +24,7 @@ export default class {
 
     async getHeaders(){
         const token=await this.authProvider.getAnyAccessToken()
-        return {authorization:'OAuth '+token}
+        return {authorization:'OAuth '+token.accessToken}
     }
 
     async get(path,isPublic=false){
@@ -34,17 +34,16 @@ export default class {
         }
         return fetch(url,{headers:await this.getHeaders()}).then(async response=>{
             if(!response.ok){
-
-                return fetch(await this.localStorage.get(path))
+                throw 'failed to fetch'
             }else{
                 response.blob().then(blob=>{
                     return toDataURL(blob)
                 }).then(dataURL=>{
-                    this.localStorage.put(path,dataURL)
+                    this.localStorage.setItem(path,dataURL)
                 })
                 return response
             }
-        })
+        }).catch(async ()=>fetch(await this.localStorage.getItem(path)))
     }
 
     async put(path,data,isPublic=false){
@@ -56,7 +55,7 @@ export default class {
             data=new Blob([data])
         }
         data=await toDataURL(data)
-        this.localStorage.put(path,data)
+        this.localStorage.setItem(path,data)
         return fetch(url,{method:'PUT',body:data,headers:await this.getHeaders()})
     }
 
@@ -65,7 +64,7 @@ export default class {
         if(isPublic){
             path='public/'+path
         }
-        this.localStorage.remove(path)
+        this.localStorage.removeItem(path)
         return fetch(url,{headers:await this.getHeaders()})
     }
 
