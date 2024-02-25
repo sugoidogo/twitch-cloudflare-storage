@@ -37,6 +37,7 @@ function makeResponse(body = undefined, init = undefined) {
 	}
 	init.headers.set('Access-Control-Allow-Origin', '*')
 	init.headers.set('Access-Control-Allow-Headers', 'Authorization,Client-ID')
+	init.headers.set('Cache-Control','max-age=5184000, private, no-cache')
 	return new Response(body, init)
 }
 
