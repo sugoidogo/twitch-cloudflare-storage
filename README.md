@@ -31,4 +31,4 @@ reset()
 
 ## Public Storage
 
-If `public=true`, access is redirected to a client-speicific folder for which the user can write into a folder named after their `user-id` and can read from folders named after others' `user-id`s. An example use case would be allowing a viewer to customize their avatar on a stream by writing the avatar settings into the public folder, to be read later by the avatar overlay.
+If `public=true`, access is redirected to a client-speicific folder for which the user can write into a folder named after their `user-id` and can read from folders named after others' `user-id`s, allowing users to share data between their clients. An example use case would be allowing a viewer to customize their avatar on a stream by writing the avatar settings into the public folder, to be read later by the avatar overlay.
