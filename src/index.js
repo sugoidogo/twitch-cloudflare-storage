@@ -184,7 +184,12 @@ export default {
 					return makeResponse(undefined, { status: 400 })
 				}
 
-				await env.storage.delete(url.pathname.slice(1))
+				const keys=[]
+				for(const object of await env.storage.list({prefix:objectName})){
+					keys.push(object.key)
+				}
+
+				await env.storage.delete(keys)
 				return makeResponse()
 			}
 
