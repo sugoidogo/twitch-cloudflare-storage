@@ -80,7 +80,7 @@ export default class {
         const url=getURL(path,isPublic)
         const storage=this.getStorage(isPublic)
 
-        storage.removeItem(path)
+        storage.removeItem(path)//TODO the server is recursive, but this library is not
         return fetch(url,{method:'DELETE',headers:await this.getHeaders()})
     }
 
