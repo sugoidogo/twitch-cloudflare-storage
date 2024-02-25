@@ -19,13 +19,14 @@ You can also add `QUOTA.<client-id>` to allow additional storage quota for a spe
 
 ## Offline Caching
 
-The static file `/tcs.mjs` is `GET`able without authentication, and can be used with [twurple-auth](https://www.jsdelivr.com/package/npm/@twurple/auth?path=es) for a simple offline cache backed by browser storage. The constructor takes a twurple `authProvider` instance, and comes with the get, put, and delete methods, which each take a path as their first argument, a boolean for public storage as their last, and put accepts a blob or string for the second argument. `get` will only return an error if the request fails *and* there is no cached data to respond with. `put` and `delete` will fail if the request fails, but the cache will still be modified. Use the `sync` function to re-attempt all failed put/delete operations.
+The static file `/tcs.mjs` is `GET`able without authentication, and can be used with [twurple-auth](https://www.jsdelivr.com/package/npm/@twurple/auth?path=es) for a simple offline cache backed by browser storage. The constructor takes a twurple `authProvider` instance, and comes with the get, put, and delete methods, which each take a path as their first argument, a boolean for public storage as their last, and put accepts a blob or string for the second argument. `get` will only return an error if the request fails *and* there is no cached data to respond with. `put` and `delete` will fail if the request fails, but the cache will still be modified. Use the `sync` function to update the server with the local cache, or use the `reset` function to clear the cache.
 
 ```js
 get(path,public=false)
 put(path,data,public=false)
 delete(path,public=false)
 sync()
+reset()
 ```
 
 ## Public Storage
