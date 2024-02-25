@@ -55,7 +55,7 @@ export default class {
             }
         }).catch(async ()=>{
             const data=await storage.getItem(path)
-            if(data==='DELETE'){
+            if(!data){
                 return new Response(null,{status:404})
             }else{
                 return fetch(data)
@@ -80,7 +80,7 @@ export default class {
         const url=getURL(path,isPublic)
         const storage=this.getStorage(isPublic)
 
-        storage.setItem(path,'DELETE')
+        storage.removeItem(path)
         return fetch(url,{method:'DELETE',headers:await this.getHeaders()})
     }
 
@@ -90,25 +90,21 @@ export default class {
     }
 
     async sync(isPublic){
+        await fetch(getURL('/',isPublic),{method:'DELETE',headers:await this.getHeaders()})
         const storage=this.getStorage(isPublic)
         const promises=[]
         for(let i;i<storage.length;i++){
             const path=storage.key(i)
             const data=await storage.getItem(path)
             const url=getURL(path,isPublic)
-            let promise;
-            if(data==='DELETE'){
-                promise=fetch(url,{method:'DELETE',headers:await this.getHeaders()})
-            }else{
-                promise=fetch(url,{method:'POST',headers:await this.getHeaders(),data:data})
-            }
+            let promise=fetch(url,{method:'POST',headers:await this.getHeaders(),data:data})
             promises.push(promise)
         }
         return promises
     }
 
     async sync(){
-        Promise.all(this.sync(true),this.sync(false))
+        return Promise.all(this.sync(true),this.sync(false))
     }
 
 }
