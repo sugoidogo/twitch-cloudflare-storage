@@ -1,4 +1,5 @@
 import Path from 'node:path'
+import tcslib from './tcs.mjs.txt' // if the file extention is mjs, it always tries to load the module
 
 function objectNotFound(objectName) {
 	return makeResponse(
@@ -39,34 +40,6 @@ function makeResponse(body = undefined, init = undefined) {
 	return new Response(body, init)
 }
 
-async function getStatic(env,objectName){
-	if(objectName[0]==='/'){
-		objectName=objectName.slice(1)
-	}
-
-	const object = await env.storage.get(objectName)
-
-	if (object === null) {
-		return objectNotFound(objectName)
-	}
-
-	const headers = new Headers()
-	object.writeHttpMetadata(headers)
-	headers.set("etag", object.httpEtag)
-	if (object.range) {
-		headers.set(
-			"content-range",
-			`bytes ${object.range.offset}-${object.range.end ??
-			object.size - 1}/${object.size}`
-		)
-	}
-	const status = 200
-	return makeResponse(object.body, {
-		headers,
-		status
-	})
-}
-
 export default {
 	async fetch(request, env) {
 		try {
@@ -77,7 +50,7 @@ export default {
 			const url = new URL(request.url)
 			const pathname = url.pathname
 			if(pathname=='/tcs.mjs'){
-				return getStatic(env,pathname)
+				return makeResponse(tcslib,{headers:{'content-type':'text/javascript'}})
 			}
 
 			if (!request.headers.has('authorization')) {
