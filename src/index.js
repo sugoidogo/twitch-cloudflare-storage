@@ -147,8 +147,9 @@ export default {
 				})
 			}
 
+			const writeRoot=getRoot(response.client_id,response.user_id,isPublic,true)
+
 			if (request.method === "PUT" || request.method == "POST") {
-				const writeRoot=getRoot(response.client_id,response.user_id,isPublic,true)
 				if (objectName.indexOf(writeRoot) !== 0) {
 					return makeResponse(undefined, { status: 400 })
 				}
@@ -186,7 +187,7 @@ export default {
 				}
 
 				const keys=[]
-				for(const object of await env.storage.list({prefix:objectName})){
+				for(const object of (await env.storage.list({prefix:objectName})).objects){
 					keys.push(object.key)
 				}
 
