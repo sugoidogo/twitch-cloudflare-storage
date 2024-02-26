@@ -198,7 +198,9 @@ export default {
 				status: 400
 			})
 		} catch (e) {
-			console.error(e)
+			// https://stackoverflow.com/a/30604852
+			// https://stackoverflow.com/a/32413145
+			console.error(e,JSON.stringify(e, Object.getOwnPropertyNames(e)))
 			throw e
 		}
 	}
