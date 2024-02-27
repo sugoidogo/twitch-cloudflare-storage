@@ -1,5 +1,7 @@
 import Path from 'node:path'
-import tcslib from './tcs.mjs.txt' // if the file extention is mjs, it always tries to load the module
+// if the file extention is mjs, it always tries to load the module
+import storagelib from './storage.mjs.txt'
+import fetchlib from './fetch.mjs.txt'
 
 function objectNotFound(objectName) {
 	return makeResponse(
@@ -50,8 +52,11 @@ export default {
 
 			const url = new URL(request.url)
 			const pathname = url.pathname
-			if(pathname=='/tcs.mjs'){
-				return makeResponse(tcslib,{headers:{'content-type':'text/javascript'}})
+			if(pathname=='/storage.mjs'){
+				return makeResponse(storagelib,{headers:{'content-type':'text/javascript'}})
+			}
+			if(pathname=='/fetch.mjs'){
+				return makeResponse(fetchlib,{headers:{'content-type':'text/javascript'}})
 			}
 
 			if (!request.headers.has('authorization')) {
