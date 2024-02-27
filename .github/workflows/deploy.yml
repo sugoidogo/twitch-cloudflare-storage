@@ -19,6 +19,7 @@ jobs:
           generate_release_notes: true
           append_body: true
           tag_name: "${{ inputs.tag }}"
+          files: src/*.mjs.txt
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
