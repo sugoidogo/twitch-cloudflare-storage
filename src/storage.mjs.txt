@@ -32,9 +32,9 @@ export default class WebStorage {
     }
 
     async getItem(path){
-        const url=getURL(path)
+        const url=this.#getURL(path)
 
-        return fetch(url,{headers:await this.getHeaders()}).then(async response=>{
+        return fetch(url,{headers:await this.#getHeaders()}).then(async response=>{
             if(!response.ok){
                 throw 'failed to fetch'
             }else{
@@ -54,17 +54,17 @@ export default class WebStorage {
     }
 
     async setItem(path,data){
-        const url=getURL(path)
+        const url=this.#getURL(path)
 
         this.storage.setItem(path,data)
-        return fetch(url,{method:'PUT',body:data,headers:await this.getHeaders()})
+        return fetch(url,{method:'PUT',body:data,headers:await this.#getHeaders()})
     }
 
     async removeItem(path){
-        const url=getURL(path)
+        const url=this.#getURL(path)
  
         this.storage.removeItem(path)//TODO the server is recursive, but this library is not
-        return fetch(url,{method:'DELETE',headers:await this.getHeaders()})
+        return fetch(url,{method:'DELETE',headers:await this.#getHeaders()})
     }
 
     async clear(){
@@ -79,13 +79,13 @@ export default class WebStorage {
     }
 
     async sync(){
-        await fetch(getURL('/'),{method:'DELETE',headers:await this.getHeaders()})
+        await fetch(this.#getURL('/'),{method:'DELETE',headers:await this.#getHeaders()})
         const promises=[]
         for(let i;i<this.storage.length;i++){
             const path=this.storage.key(i)
             const data=await this.storage.getItem(path)
-            const url=getURL(path)
-            let promise=fetch(url,{method:'POST',headers:await this.getHeaders(),data:data})
+            const url=this.#getURL(path)
+            let promise=fetch(url,{method:'POST',headers:await this.#getHeaders(),data:data})
             promises.push(promise)
         }
         return Promise.all(promises)
