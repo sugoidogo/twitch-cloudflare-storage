@@ -1,9 +1,9 @@
 import localforage from 'https://cdn.jsdelivr.net/npm/localforage/+esm'
 
-export default class extends Storage{
-    constructor(authProvider,isPublic){
-        super()
+export default class WebStorage {
+    constructor(authProvider,userID,isPublic=false){
         this.authProvider=authProvider
+        this.userID=userID
         let prefix='private.'
         if(isPublic){
             prefix='public.'
@@ -19,7 +19,7 @@ export default class extends Storage{
     }
 
     async #getHeaders(){
-        const token=await this.authProvider.getAnyAccessToken()
+        const token=await this.authProvider.getAccessTokenForUser(this.userID)
         return {authorization:'OAuth '+token.accessToken}
     }
 
