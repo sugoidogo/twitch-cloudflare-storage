@@ -57,21 +57,21 @@ export default class WebStorage {
         const url=this.#getURL(path)
 
         this.storage.setItem(path,data)
-        return fetch(url,{method:'PUT',body:data,headers:await this.#getHeaders()})
+        return fetch(url,{method:'PUT',body:data,headers:await this.#getHeaders(),keepalive:true})
     }
 
     async removeItem(path){
         const url=this.#getURL(path)
  
         this.storage.removeItem(path)//TODO the server is recursive, but this library is not
-        return fetch(url,{method:'DELETE',headers:await this.#getHeaders()})
+        return fetch(url,{method:'DELETE',headers:await this.#getHeaders(),keepalive:true})
     }
 
     async clear(){
         this.clearCache()
 
         const url=this.#getURL('/')
-        return fetch(url,{method:'DELETE',headers:await this.#getHeaders()})
+        return fetch(url,{method:'DELETE',headers:await this.#getHeaders(),keepalive:true})
     }
 
     clearCache(){
@@ -85,7 +85,7 @@ export default class WebStorage {
             const path=this.storage.key(i)
             const data=await this.storage.getItem(path)
             const url=this.#getURL(path)
-            let promise=fetch(url,{method:'POST',headers:await this.#getHeaders(),data:data})
+            let promise=fetch(url,{method:'POST',headers:await this.#getHeaders(),data:data,keepalive:true})
             promises.push(promise)
         }
         return Promise.all(promises)
