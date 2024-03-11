@@ -2,6 +2,7 @@ import localforage from 'https://cdn.jsdelivr.net/npm/localforage/+esm'
 
 export default class extends Storage{
     constructor(authProvider,isPublic){
+        super()
         this.authProvider=authProvider
         let prefix='private.'
         if(isPublic){
