@@ -74,6 +74,10 @@ export default {
 			}
 			response = await response.json()
 
+			if(!('user_id' in response)){
+				return makeResponse('user access token required',{status:401})
+			}
+
 			const DENY=await env.config.get('DENY') || ''
 			const ALLOW=await env.config.get('ALLOW') || ''
 			if(DENY.includes(response.user_id) || !ALLOW.includes(response.client_id)){
