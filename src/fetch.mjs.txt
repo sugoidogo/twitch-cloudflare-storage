@@ -10,7 +10,7 @@ const fetch=window.fetch
  * @param {RequestInit} options 
  * @returns {Promise<Response>}
  */
-export default async function fetchCached(resource,options=undefined){
+export default async function fetchCached(resource,options={}){
     if('body' in options){
         cache.setItem(resource.toString(),options.body)
         return fetch(resource,options)
